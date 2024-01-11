@@ -8,5 +8,16 @@
 </head>
 <body>
 <h1>Welcome to the Home page</h1>
+
+<nav>
+        <ul>
+
+            <li><a href="{{ url_for('info') }}">Information</a></li>
+            <li><a href="{{ url_for('submit_form') }}">Submit Form</a></li>
+            <li><a href="{{ url_for('upload_file') }}">Upload File</a></li>
+
+        </ul>
+    </nav>
+
 </body>
 </html>

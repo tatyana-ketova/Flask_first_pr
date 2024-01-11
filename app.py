@@ -22,7 +22,7 @@ Create a simple RESTful API using Flask. Implement endpoints for GET, POST, and 
 
 '''
 
-from flask import Flask, render_template, request, redirect, url_for, abort, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, abort, send_from_directory, jsonify
 import os
 
 app = Flask(__name__)
@@ -65,23 +65,27 @@ def upload_file():
 
 # API Endpoint: Simple RESTful API for managing tasks
 tasks = []
-
-@app.route('/tasks', methods=['GET', 'POST'])
-def manage_tasks():
-    if request.method == 'GET':
-        return {'tasks': tasks}
-    elif request.method == 'POST':
-        task = request.json.get('task')
-        tasks.append(task)
-        return {'message': 'Task added successfully'}
-
+@app.route('/tasks', methods=['GET'])
+def get_tasks():
+    return jsonify({'tasks': tasks})
+#curl http://localhost:5000/tasks
+@app.route('/tasks', methods=['POST'])
+def add_task():
+    data = request.get_json()
+    if 'task' in data:
+        new_task = data['task']
+        tasks.append(new_task)
+        return jsonify({'message': 'Task added successfully'})
+    else:
+        return jsonify({'error': 'Invalid request. Please provide a task in the request body.'}), 400
+#curl -X POST -H "Content-Type: application/json" -d '{"task":"New task"}' http://localhost:5000/tasks
 @app.route('/tasks/<int:task_id>', methods=['DELETE'])
 def delete_task(task_id):
     if task_id < len(tasks):
         del tasks[task_id]
-        return {'message': 'Task deleted successfully'}
+        return jsonify({'message': 'Task deleted successfully'})
     else:
-        abort(404)
+        return jsonify({'error': 'Task not found'}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
